@@ -191,19 +191,17 @@ async function createTableEA(){
 	  
 }
 
-async function updateTableEA(query: string) {
+async function updateTableEA(query: string): Promise<boolean> {
 	try {
 	  const connection = await conn;
 	  await connection.query(`INSERT INTO ea_consumption VALUES ${query};`);
 	  console.log("EA Consumption table updated successfully");
+	  return true; // Return true if successful
 	} catch (error) {
 	  console.error("Error updating EA Consumption table:", error);
+	  return false; // Return false if an error occurs
 	}
   }
-
-  async function dropTableCSP(){
-	await (await conn).query("DROP TABLE csp_consumption;")
-}
 
 async function getAMs(name:string){
 	try {
@@ -246,13 +244,15 @@ async function createTableCSP(){
 }
 
 
-async function updateTableCSP(query: string) {
+async function updateTableCSP(query: string): Promise<boolean> {
 	try {
 	  const connection = await conn;
 	  await connection.query(`INSERT INTO csp_consumption VALUES ${query};`);
 	  console.log("CSP Consumption table updated successfully");
+	  return true; // Return true if successful
 	} catch (error) {
 	  console.error("Error updating CSP Consumption table:", error);
+	  return false; // Return false if an error occurs
 	}
   }
 // Handling '/' req: express.Requestuest
@@ -402,27 +402,23 @@ app.get('/get-all-ea', async (_req: express.Request, _res: express.Response) => 
 
 
 
-app.post('/excel-data-ea', (req: express.Request, res: express.Response) => {
+app.post('/excel-data-ea', async (req: express.Request, res: express.Response) => {
 	const excelData: QueryData[] = req.body.data; // Explicitly type excelData
 	if (!excelData) {
 	  return res.status(400).send('No data provided');
 	}
+  
+	try {
+	  // Drop and create table
+	  
+	  
 	
-
-
-	dropTableEA();
-	createTableEA();
-
-	
-	
-
-
-	// Process the data
-	const processedData = excelData.slice(1).map((row: QueryData) => {
+	  // Process the data
+	  const processedData = excelData.slice(1).map((row: QueryData) => {
 		const values = Object.values(row).map((value, index) => {
 		  if (index === 1 || index === 2 || index === 4) {
 			return `'${value}'`; // Wrap these columns in single quotes
-		  } else if (value === null || value === undefined || value === '' || value==='-') {
+		  } else if (value === null || value === undefined || value === '' || value === '-') {
 			return 'NULL'; // Handle null or undefined values
 		  } else {
 			return value;
@@ -430,12 +426,22 @@ app.post('/excel-data-ea', (req: express.Request, res: express.Response) => {
 		}).join(', ');
 		return `(${values})`;
 	  }).join(', ');
-	updateTableEA(processedData)	
-	
-  console.log(processedData)
-	// Here you can process the received data further, save it to a database, etc.
   
-	res.status(200).send('Data received successfully');
+	  const isUpdated = await updateTableEA(processedData);
+	  
+	  if (isUpdated) {
+		await dropTableEA();
+	  	await createTableEA();
+		await updateTableEA(processedData);
+		res.status(200).send('Data received and table updated successfully');
+	  } else {
+		res.status(500).send('Error updating the EA Consumption table');
+	  }
+  
+	} catch (error) {
+	  console.error('Error processing data:', error);
+	  res.status(500).send('An error occurred while processing data');
+	}
   });
 
 
@@ -491,26 +497,23 @@ app.get('/getAMdataEA/:name', async (req: express.Request, res: express.Response
   });
 
 
-app.post('/excel-data-csp', (req: express.Request, res: express.Response) => {
+   app.post('/excel-data-csp', async (req: express.Request, res: express.Response) => {
 	const excelData: QueryData[] = req.body.data; // Explicitly type excelData
 	if (!excelData) {
 	  return res.status(400).send('No data provided');
 	}
+  
+	try {
+	  // Drop and create table
+	  
+	  
 	
-
-
-	dropTableCSP();
-	createTableCSP();
-
-	
-	
-
-	// Process the data
-	const processedData = excelData.slice(1).map((row: QueryData) => {
+	  // Process the data
+	  const processedData = excelData.slice(1).map((row: QueryData) => {
 		const values = Object.values(row).map((value, index) => {
 		  if (index === 1 || index === 2 || index === 4) {
 			return `'${value}'`; // Wrap these columns in single quotes
-		  } else if (value === null || value === undefined || value === '' || value==='-') {
+		  } else if (value === null || value === undefined || value === '' || value === '-') {
 			return 'NULL'; // Handle null or undefined values
 		  } else {
 			return value;
@@ -518,12 +521,22 @@ app.post('/excel-data-csp', (req: express.Request, res: express.Response) => {
 		}).join(', ');
 		return `(${values})`;
 	  }).join(', ');
-	updateTableCSP(processedData)	
-	
-  console.log(processedData)
-	// Here you can process the received data further, save it to a database, etc.
   
-	res.status(200).send('Data received successfully');
+	  const isUpdated = await updateTableCSP(processedData);
+	  
+	  if (isUpdated) {
+		await dropTableCSP();
+	  	await createTableCSP();
+		await updateTableCSP(processedData);
+		res.status(200).send('Data received and table updated successfully');
+	  } else {
+		res.status(500).send('Error updating the CSP Consumption table');
+	  }
+  
+	} catch (error) {
+	  console.error('Error processing data:', error);
+	  res.status(500).send('An error occurred while processing data');
+	}
   });
 
 
