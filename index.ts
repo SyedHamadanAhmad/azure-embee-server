@@ -161,7 +161,9 @@ interface QueryData {
 async function dropTableEA(){
 	await (await conn).query("DROP TABLE ea_consumption;")
 }
-
+async function dropTableCSP(){
+	await (await conn).query("DROP TABLE csp_consumption;")
+}
 async function createTableEA(){
 	await (await conn).query(`
 		CREATE TABLE \`azure_usage\`.\`ea_consumption\` (
