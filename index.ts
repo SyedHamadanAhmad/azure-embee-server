@@ -255,12 +255,12 @@ async function updateTableCSP(query: string) {
 	  console.error("Error updating CSP Consumption table:", error);
 	}
   }
-// Handling '/' Request
-app.get('/', (_req, _res) => {
+// Handling '/' req: express.Requestuest
+app.get('/', (_req: express.Request, _res: express.Response) => {
 	_res.send("TypeScript With Express");
 });
 
-app.get('/get-all-ea', async (_req, _res) => {
+app.get('/get-all-ea', async (_req: express.Request, _res: express.Response) => {
 	try {
 	  const data = await getAllEA();
 	  _res.json(data);
@@ -270,7 +270,7 @@ app.get('/get-all-ea', async (_req, _res) => {
 	}
   });
 
-  app.get('/get-all-csp', async (_req, _res) => {
+  app.get('/get-all-csp', async (_req: express.Request, _res: express.Response) => {
 	try {
 	  const data = await getAllCSP();
 	  _res.json(data);
@@ -280,7 +280,7 @@ app.get('/get-all-ea', async (_req, _res) => {
 	}
   });
 
-  app.get(`/getAMs/:name`, async(_req, _res)=>{
+  app.get(`/getAMs/:name`, async(_req: express.Request, _res: express.Response)=>{
 	var name=_req.params.name
 	try {
 		const data = await getAMs(name);
@@ -292,7 +292,7 @@ app.get('/get-all-ea', async (_req, _res) => {
 	  }
 
   })
-  app.get('/get-token', async (req, res) => {
+  app.get('/get-token', async (req: express.Request, res: express.Response) => {
 	try {
 	  const response = await fetch('https://login.microsoftonline.com/feebb8e1-2ddf-4da2-b3b3-ae51c474f838/oauth2/token', {
 		method: 'POST',
@@ -320,7 +320,7 @@ app.get('/get-all-ea', async (_req, _res) => {
 
 
   
-  app.get('/get-users-by-manager/:name', async (req, res) => {
+  app.get('/get-users-by-manager/:name', async (req: express.Request, res: express.Response) => {
 	try {
 	  // Step 1: Fetch the token
 	  const tokenResponse = await fetch('http://localhost:3000/get-token');
@@ -376,7 +376,7 @@ app.get('/get-all-ea', async (_req, _res) => {
 	}
   });
   
-  app.get('/getCompanyDataEA/:name', async(req, res)=>{
+  app.get('/getCompanyDataEA/:name', async(req: express.Request, res: express.Response)=>{
 	try {
 		const companyName=req.params.name
 		const data = await getCompanyDataEA(companyName);
@@ -386,7 +386,7 @@ app.get('/get-all-ea', async (_req, _res) => {
 		res.status(500).json({ error: 'Failed to fetch data' });
 	  }
   })
-  app.get('/getCompanyDataCSP/:name', async(req, res)=>{
+  app.get('/getCompanyDataCSP/:name', async(req: express.Request, res: express.Response)=>{
 	try {
 		const companyName=req.params.name
 		const data = await getCompanyDataCSP(companyName);
@@ -402,7 +402,7 @@ app.get('/get-all-ea', async (_req, _res) => {
 
 
 
-app.post('/excel-data-ea', (req, res) => {
+app.post('/excel-data-ea', (req: express.Request, res: express.Response) => {
 	const excelData: QueryData[] = req.body.data; // Explicitly type excelData
 	if (!excelData) {
 	  return res.status(400).send('No data provided');
@@ -439,7 +439,7 @@ app.post('/excel-data-ea', (req, res) => {
   });
 
 
-app.post('/getManagerDataEA', async (req, res) => {
+app.post('/getManagerDataEA', async (req: express.Request, res: express.Response) => {
 	try {
 	  const names: string[] = req.body.names; // Expecting { names: string[] } in the request body
 	  if (!Array.isArray(names)) {
@@ -451,7 +451,7 @@ app.post('/getManagerDataEA', async (req, res) => {
 	  res.status(500).json({ error: 'An error occurred' });
 	}
   });
-  app.post('/getManagerDataCSP', async (req, res) => {
+  app.post('/getManagerDataCSP', async (req: express.Request, res: express.Response) => {
 	try {
 	  const names: string[] = req.body.names; // Expecting { names: string[] } in the request body
 	  if (!Array.isArray(names)) {
@@ -466,7 +466,7 @@ app.post('/getManagerDataEA', async (req, res) => {
 
 
 
-app.get('/getAMdataEA/:name', async (req, res) => {
+app.get('/getAMdataEA/:name', async (req: express.Request, res: express.Response) => {
 	try {
 	  const name: string = req.params.name; // Expecting { names: string[] } in the request body
 	  
@@ -479,7 +479,7 @@ app.get('/getAMdataEA/:name', async (req, res) => {
 
  
 
-  app.get('/getAMdataCSP/:name', async (req, res) => {
+  app.get('/getAMdataCSP/:name', async (req: express.Request, res: express.Response) => {
 	try {
 	  const name: string = req.params.name; // Expecting { names: string[] } in the request body
 	  
@@ -491,7 +491,7 @@ app.get('/getAMdataEA/:name', async (req, res) => {
   });
 
 
-app.post('/excel-data-csp', (req, res) => {
+app.post('/excel-data-csp', (req: express.Request, res: express.Response) => {
 	const excelData: QueryData[] = req.body.data; // Explicitly type excelData
 	if (!excelData) {
 	  return res.status(400).send('No data provided');
@@ -578,7 +578,7 @@ return rankQuery;
 	}
   }
 
-  app.get('/getAverageEA', async(req, res)=>{
+  app.get('/getAverageEA', async(req: express.Request, res: express.Response)=>{
 	try{	
 		const data=await getAverageEA();
 		res.json(data);
@@ -601,7 +601,7 @@ return rankQuery;
 	}
   }
 
-  app.get('/getAverageCSP', async(req, res)=>{
+  app.get('/getAverageCSP', async(req: express.Request, res: express.Response)=>{
 	try{	
 		const data=await getAverageCSP();
 		res.json(data);
@@ -613,7 +613,7 @@ return rankQuery;
 	}
   })
  
-app.get('/getRankEA/:name', async(req, res)=>{
+app.get('/getRankEA/:name', async(req: express.Request, res: express.Response)=>{
 	try{
 		const companyName=req.params.name;
 		const currentDate = new Date();
@@ -632,7 +632,7 @@ app.get('/getRankEA/:name', async(req, res)=>{
 		throw error;
 	}
   })
-  app.get('/getRankCSP/:name', async(req, res)=>{
+  app.get('/getRankCSP/:name', async(req: express.Request, res: express.Response)=>{
 	try{
 		const companyName=req.params.name;
 		const currentDate = new Date();
@@ -696,7 +696,7 @@ app.get('/getRankEA/:name', async(req, res)=>{
   }
 
  // Endpoint for EAgetSuperAdminNSE
-app.get('/EAgetSuperAdminNSE', async (req, res) => {
+app.get('/EAgetSuperAdminNSE', async (req: express.Request, res: express.Response) => {
 	try {
 	  const data = await EAgetSuperAdminNSE();
 	  res.status(200).json(data);
@@ -706,7 +706,7 @@ app.get('/EAgetSuperAdminNSE', async (req, res) => {
   });
   
   // Endpoint for CSPgetSuperAdminNSE
-  app.get('/CSPgetSuperAdminNSE', async (req, res) => {
+  app.get('/CSPgetSuperAdminNSE', async (req: express.Request, res: express.Response) => {
 	try {
 	  const data = await CSPgetSuperAdminNSE();
 	  res.status(200).json(data);
@@ -716,7 +716,7 @@ app.get('/EAgetSuperAdminNSE', async (req, res) => {
   });
   
   // Endpoint for EAgetSuperAdminW
-  app.get('/EAgetSuperAdminW', async (req, res) => {
+  app.get('/EAgetSuperAdminW', async (req: express.Request, res: express.Response) => {
 	try {
 	  const data = await EAgetSuperAdminW();
 	  res.status(200).json(data);
@@ -726,7 +726,7 @@ app.get('/EAgetSuperAdminNSE', async (req, res) => {
   });
   
   // Endpoint for CSPgetSuperAdminW
-  app.get('/CSPgetSuperAdminW', async (req, res) => {
+  app.get('/CSPgetSuperAdminW', async (req: express.Request, res: express.Response) => {
 	try {
 	  const data = await CSPgetSuperAdminW();
 	  res.status(200).json(data);

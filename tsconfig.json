@@ -1,10 +1,15 @@
 {
-    "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "rootDir": "./",
-      "outDir": "./build",
-      "esModuleInterop": true,
-      "strict": true
-    }
-  }
+  "compilerOptions": {
+    "target": "es2017",        // Use modern JavaScript features
+    "lib": ["es2017", "dom"],   // Include relevant libraries (ES2017 and DOM APIs)
+    "module": "commonjs",       // Use CommonJS module system (for Node.js)
+    "strict": true,             // Enable strict type checking
+    "esModuleInterop": true,    // Ensure ES module interoperability
+    "skipLibCheck": true,       // Skip checking type declarations in node_modules
+    "forceConsistentCasingInFileNames": true, // Ensure consistent casing
+    "outDir": "./build",        // Output directory for compiled files
+    "rootDir": "./",            // Root directory for source files
+  },
+  "include": ["./**/*.ts"],      // Include all TypeScript files in the project
+  "exclude": ["node_modules"]    // Exclude node_modules from compilation
+}
