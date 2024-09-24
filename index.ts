@@ -130,7 +130,7 @@ interface QueryData {
 			return results;
 		}
 		
-	 catch (err) {
+	 catch (err) { 
 		console.log("ERROR: ", err);
 	}
   }
@@ -196,7 +196,14 @@ async function createTableEA(){
 async function updateTableEA(query: string): Promise<boolean> {
 	try {
 	  const connection = await conn;
-	  await connection.query(`INSERT INTO ea_consumption VALUES ${query};`);
+	  
+	  // Escape the 'dec' column name using backticks
+	  await connection.query(`
+		INSERT INTO ea_consumption 
+		(region, account_manager, enrollment_no, customer_name, markup, april, may, june, july, aug, sep, oct, nov, \`dec\`, jan, feb, march, total) 
+		VALUES ${query};
+	  `);
+	  
 	  console.log("EA Consumption table updated successfully");
 	  return true; // Return true if successful
 	} catch (error) {
@@ -249,7 +256,14 @@ async function createTableCSP(){
 async function updateTableCSP(query: string): Promise<boolean> {
 	try {
 	  const connection = await conn;
-	  await connection.query(`INSERT INTO csp_consumption VALUES ${query};`);
+	  
+	  // Escape the 'dec' column name using backticks
+	  await connection.query(`
+		INSERT INTO csp_consumption 
+		(region, account_manager, enrollment_no, customer_name, markup, april, may, june, july, aug, sep, oct, nov, \`dec\`, jan, feb, march, total) 
+		VALUES ${query};
+	  `);
+	  
 	  console.log("CSP Consumption table updated successfully");
 	  return true; // Return true if successful
 	} catch (error) {
@@ -257,6 +271,7 @@ async function updateTableCSP(query: string): Promise<boolean> {
 	  return false; // Return false if an error occurs
 	}
   }
+  
 // Handling '/' req: express.Requestuest
 app.get('/', (_req: express.Request, _res: express.Response) => {
 	_res.send("TypeScript With Express");
@@ -401,10 +416,7 @@ app.get('/get-all-ea', async (_req: express.Request, _res: express.Response) => 
 
 
 
-
-
-
-app.post('/excel-data-ea', async (req: express.Request, res: express.Response) => {
+  app.post('/excel-data-ea', async (req: express.Request, res: express.Response) => {
 	const excelData: QueryData[] = req.body.data; // Explicitly type excelData
 	if (!excelData) {
 	  return res.status(400).send('No data provided');
@@ -417,8 +429,9 @@ app.post('/excel-data-ea', async (req: express.Request, res: express.Response) =
 	
 	  // Process the data
 	  const processedData = excelData.slice(1).map((row: QueryData) => {
-		const values = Object.values(row).map((value, index) => {
-		  if (index === 1 || index === 2 || index === 4) {
+		// Remove the first element of the row (the sequence number) using slice(1)
+		const values = Object.values(row).slice(1).map((value, index) => {
+		  if (index === 0 || index === 1 || index === 3) { // Adjusted index due to slice(1)
 			return `'${value}'`; // Wrap these columns in single quotes
 		  } else if (value === null || value === undefined || value === '' || value === '-') {
 			return 'NULL'; // Handle null or undefined values
@@ -428,7 +441,9 @@ app.post('/excel-data-ea', async (req: express.Request, res: express.Response) =
 		}).join(', ');
 		return `(${values})`;
 	  }).join(', ');
-  
+	  
+	  console.log(processedData);
+	  
 	  const isUpdated = await updateTableEA(processedData);
 	  
 	  if (isUpdated) {
@@ -437,7 +452,7 @@ app.post('/excel-data-ea', async (req: express.Request, res: express.Response) =
 		await updateTableEA(processedData);
 		res.status(200).send('Data received and table updated successfully');
 	  } else {
-		res.status(500).send('Error updating the EA Consumption table');
+		res.status(500).send('Error updating the CSP Consumption table');
 	  }
   
 	} catch (error) {
@@ -445,6 +460,10 @@ app.post('/excel-data-ea', async (req: express.Request, res: express.Response) =
 	  res.status(500).send('An error occurred while processing data');
 	}
   });
+
+
+
+
 
 
 app.post('/getManagerDataEA', async (req: express.Request, res: express.Response) => {
@@ -512,8 +531,9 @@ app.get('/getAMdataEA/:name', async (req: express.Request, res: express.Response
 	
 	  // Process the data
 	  const processedData = excelData.slice(1).map((row: QueryData) => {
-		const values = Object.values(row).map((value, index) => {
-		  if (index === 1 || index === 2 || index === 4) {
+		// Remove the first element of the row (the sequence number) using slice(1)
+		const values = Object.values(row).slice(1).map((value, index) => {
+		  if (index === 0 || index === 1 || index === 3) { // Adjusted index due to slice(1)
 			return `'${value}'`; // Wrap these columns in single quotes
 		  } else if (value === null || value === undefined || value === '' || value === '-') {
 			return 'NULL'; // Handle null or undefined values
@@ -523,7 +543,9 @@ app.get('/getAMdataEA/:name', async (req: express.Request, res: express.Response
 		}).join(', ');
 		return `(${values})`;
 	  }).join(', ');
-  
+	  
+	  console.log(processedData);
+	  
 	  const isUpdated = await updateTableCSP(processedData);
 	  
 	  if (isUpdated) {
