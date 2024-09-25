@@ -431,7 +431,7 @@ app.get('/get-all-ea', async (_req: express.Request, _res: express.Response) => 
 	  const processedData = excelData.slice(1).map((row: QueryData) => {
 		// Remove the first element of the row (the sequence number) using slice(1)
 		const values = Object.values(row).slice(1).map((value, index) => {
-		  if (index === 0 || index === 1 || index === 3) { // Adjusted index due to slice(1)
+		  if (index === 0 || index === 1 || index === 3 || index===2) { // Adjusted index due to slice(1)
 			return `'${value}'`; // Wrap these columns in single quotes
 		  } else if (value === null || value === undefined || value === '' || value === '-') {
 			return 'NULL'; // Handle null or undefined values
@@ -460,7 +460,6 @@ app.get('/get-all-ea', async (_req: express.Request, _res: express.Response) => 
 	  res.status(500).send('An error occurred while processing data');
 	}
   });
-
 
 
 
@@ -518,7 +517,7 @@ app.get('/getAMdataEA/:name', async (req: express.Request, res: express.Response
   });
 
 
-   app.post('/excel-data-csp', async (req: express.Request, res: express.Response) => {
+  app.post('/excel-data-csp', async (req: express.Request, res: express.Response) => {
 	const excelData: QueryData[] = req.body.data; // Explicitly type excelData
 	if (!excelData) {
 	  return res.status(400).send('No data provided');
@@ -533,7 +532,7 @@ app.get('/getAMdataEA/:name', async (req: express.Request, res: express.Response
 	  const processedData = excelData.slice(1).map((row: QueryData) => {
 		// Remove the first element of the row (the sequence number) using slice(1)
 		const values = Object.values(row).slice(1).map((value, index) => {
-		  if (index === 0 || index === 1 || index === 3) { // Adjusted index due to slice(1)
+		  if (index === 0 || index === 1 || index === 3 || index==2) { // Adjusted index due to slice(1)
 			return `'${value}'`; // Wrap these columns in single quotes
 		  } else if (value === null || value === undefined || value === '' || value === '-') {
 			return 'NULL'; // Handle null or undefined values
@@ -562,7 +561,6 @@ app.get('/getAMdataEA/:name', async (req: express.Request, res: express.Response
 	  res.status(500).send('An error occurred while processing data');
 	}
   });
-
 
   function getMonthName(monthIndex: number): string {
     const monthNames = ["jan", "feb", "march", "april", "may", "june", "july", "aug", "sep", "oct", "nov", "dec"];
