@@ -467,6 +467,7 @@ app.get('/get-all-ea', async (_req: express.Request, _res: express.Response) => 
 
 app.post('/getManagerDataEA', async (req: express.Request, res: express.Response) => {
 	try {
+		createConn();
 	  const names: string[] = req.body.names; // Expecting { names: string[] } in the request body
 	  if (!Array.isArray(names)) {
 		return res.status(400).json({ error: 'Invalid input' });
@@ -494,6 +495,7 @@ app.post('/getManagerDataEA', async (req: express.Request, res: express.Response
 
 app.get('/getAMdataEA/:name', async (req: express.Request, res: express.Response) => {
 	try {
+		createConn();
 	  const name: string = req.params.name; // Expecting { names: string[] } in the request body
 	  
 	  const data = await getAMdataEA(name);
@@ -733,6 +735,7 @@ app.get('/getRankEA/:name', async(req: express.Request, res: express.Response)=>
  // Endpoint for EAgetSuperAdminNSE
 app.get('/EAgetSuperAdminNSE', async (req: express.Request, res: express.Response) => {
 	try {
+		createConn();
 	  const data = await EAgetSuperAdminNSE();
 	  res.status(200).json(data);
 	} catch (err) {
@@ -753,6 +756,7 @@ app.get('/EAgetSuperAdminNSE', async (req: express.Request, res: express.Respons
   // Endpoint for EAgetSuperAdminW
   app.get('/EAgetSuperAdminW', async (req: express.Request, res: express.Response) => {
 	try {
+		createConn();
 	  const data = await EAgetSuperAdminW();
 	  res.status(200).json(data);
 	} catch (err) {
